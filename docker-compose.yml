@@ -1,0 +1,10 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: changeMeInProd!
+      POSTGRES_USER: pc_builder_db
