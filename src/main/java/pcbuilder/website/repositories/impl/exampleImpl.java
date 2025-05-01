@@ -1,4 +1,6 @@
 package pcbuilder.website.repositories.impl;
 
-public class exampleImpl {
+import pcbuilder.website.repositories.example;
+
+public class exampleImpl implements example {
 }

@@ -1,4 +1,6 @@
 package pcbuilder.website.controllers.impl;
 
-public class exampleImpl {
+import pcbuilder.website.controllers.example;
+
+public class exampleImpl implements example {
 }

@@ -1,4 +1,6 @@
 package pcbuilder.website.services.impl;
 
-public class exampleImpl {
+import pcbuilder.website.services.example;
+
+public class exampleImpl implements example {
 }
