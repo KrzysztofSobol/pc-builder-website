@@ -1,9 +1,6 @@
 package pcbuilder.website.models.entities.products;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +17,8 @@ import pcbuilder.website.models.entities.Product;
 
 @Entity
 @Table(name = "Storages")
-
+@PrimaryKeyJoinColumn(name = "productID")
+@DiscriminatorValue("Storage")
 public class Storage extends Product {
     private Integer capacity;
     @Enumerated(EnumType.STRING)

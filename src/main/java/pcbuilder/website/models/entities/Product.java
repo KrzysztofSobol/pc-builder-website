@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Products")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "productType")
 public class Product {
     @Id
     @GeneratedValue

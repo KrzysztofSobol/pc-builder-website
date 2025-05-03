@@ -1,6 +1,8 @@
 package pcbuilder.website.models.entities.products;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +19,8 @@ import pcbuilder.website.models.entities.Product;
 
 @Entity
 @Table(name = "RAM")
+@PrimaryKeyJoinColumn(name = "productID")
+@DiscriminatorValue("RAM")
 public class RAM extends Product {
     private Integer ddrGen;
     private Integer speed;

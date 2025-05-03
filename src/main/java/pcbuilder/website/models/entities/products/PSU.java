@@ -1,9 +1,6 @@
 package pcbuilder.website.models.entities.products;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,6 +19,8 @@ import pcbuilder.website.models.entities.Product;
 
 @Entity
 @Table(name = "PSUs")
+@PrimaryKeyJoinColumn(name = "productID")
+@DiscriminatorValue("PSU")
 public class PSU extends Product {
     @Enumerated(EnumType.STRING)
     private PSUType type;

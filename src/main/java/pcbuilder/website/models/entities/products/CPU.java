@@ -1,6 +1,8 @@
 package pcbuilder.website.models.entities.products;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +19,8 @@ import pcbuilder.website.models.entities.Product;
 
 @Entity
 @Table(name = "CPUs")
+@PrimaryKeyJoinColumn(name = "productID")
+@DiscriminatorValue("CPU")
 public class CPU extends Product {
     private Integer coreCount;
     private Double coreClock;
