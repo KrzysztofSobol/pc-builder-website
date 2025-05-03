@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import pcbuilder.website.enums.StorageType;
+import pcbuilder.website.enums.Efficiency;
+import pcbuilder.website.enums.ModularType;
+import pcbuilder.website.enums.PSUType;
 import pcbuilder.website.models.entities.Product;
 
 @Data
@@ -19,13 +21,14 @@ import pcbuilder.website.models.entities.Product;
 @EqualsAndHashCode(callSuper = true)
 
 @Entity
-@Table(name = "Storages")
-
-public class Storage extends Product {
-    private Integer capacity;
+@Table(name = "PSUs")
+public class PSU extends Product {
     @Enumerated(EnumType.STRING)
-    private StorageType type;
-    private Integer cache;
-    private String formFactor;
-    private String interFace;
+    private PSUType type;
+    @Enumerated(EnumType.STRING)
+    private Efficiency efficiency;
+    private Integer wattage;
+    @Enumerated(EnumType.STRING)
+    private ModularType modular;
+    private String color;
 }

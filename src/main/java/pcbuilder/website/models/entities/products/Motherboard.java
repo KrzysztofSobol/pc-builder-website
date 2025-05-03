@@ -1,15 +1,12 @@
 package pcbuilder.website.models.entities.products;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import pcbuilder.website.enums.StorageType;
 import pcbuilder.website.models.entities.Product;
 
 @Data
@@ -19,13 +16,11 @@ import pcbuilder.website.models.entities.Product;
 @EqualsAndHashCode(callSuper = true)
 
 @Entity
-@Table(name = "Storages")
-
-public class Storage extends Product {
-    private Integer capacity;
-    @Enumerated(EnumType.STRING)
-    private StorageType type;
-    private Integer cache;
+@Table(name = "Motherboards")
+public class Motherboard extends Product {
+    private String socket;
     private String formFactor;
-    private String interFace;
+    private Integer maxMemory;
+    private Integer memorySlots;
+    private String color;
 }

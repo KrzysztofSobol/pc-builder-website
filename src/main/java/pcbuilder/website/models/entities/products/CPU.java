@@ -16,12 +16,12 @@ import pcbuilder.website.models.entities.Product;
 @EqualsAndHashCode(callSuper = true)
 
 @Entity
-@Table(name = "GPUs")
-public class GPUs extends Product {
-    private String chipset;
-    private Integer memory;
-    private Integer coreClock;
-    private Integer boostClock;
-    private String color;
-    private Integer length; // (mm)
+@Table(name = "CPUs")
+public class CPU extends Product {
+    private Integer coreCount;
+    private Double coreClock;
+    private Double boostClock;
+    private Integer tdp;
+    private Boolean graphics;
+    private Boolean smt;
 }
