@@ -1,12 +1,11 @@
 package pcbuilder.website.repositories;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import pcbuilder.website.models.entities.User;
 
-import java.util.UUID;
+import java.util.List;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, UUID> {
-
+public interface UserRepository {
+    List<User> findAll();
 }

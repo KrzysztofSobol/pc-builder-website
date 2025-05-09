@@ -18,12 +18,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User save(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
     public List<User> findAll(){
-        return StreamSupport.stream(userRepository.findAll().spliterator(), false).collect(Collectors.toList());
+        return null;
     }
 }
