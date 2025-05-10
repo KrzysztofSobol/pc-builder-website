@@ -1,17 +1,15 @@
-package pcbuilder.website.controllers.impl;
+package pcbuilder.website.controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pcbuilder.website.controllers.UserController;
 import pcbuilder.website.models.entities.User;
 import pcbuilder.website.services.UserService;
 
 import java.util.List;
 
 @RestController
-public class UserControllerImpl implements UserController {
+public class UserControllerImpl {
     private final UserService userService;
 
     public UserControllerImpl(UserService userService) {
@@ -19,7 +17,7 @@ public class UserControllerImpl implements UserController {
     }
 
     @GetMapping(path = "/users")
-    public ResponseEntity<List<User>> addUser() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.CREATED);
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok(userService.findAll());
     }
 }

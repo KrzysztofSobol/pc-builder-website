@@ -4,8 +4,9 @@ import org.springframework.stereotype.Repository;
 import pcbuilder.website.models.entities.User;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface UserRepository {
-    List<User> findAll();
+public interface UserRepository extends GenericDao<User, UUID>{
+
 }
