@@ -15,7 +15,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
-public class GenericDaoImpl<T,K> implements GenericDao<T, K> {
+public class GenericDaoImpl<T,K> implements GenericDao<T, K>  {
     private final Class<T> classType;
 
     @PersistenceContext
@@ -30,8 +30,9 @@ public class GenericDaoImpl<T,K> implements GenericDao<T, K> {
 
     @Override
     @Transactional
-    public void save(T entity) {
+    public T save(T entity) {
         em.persist(entity);
+        return entity;
     }
 
     @Override
@@ -42,11 +43,12 @@ public class GenericDaoImpl<T,K> implements GenericDao<T, K> {
 
     @Override
     @Transactional
-    public void update(T entity) {
+    public T update(T entity) {
         if (entity == null) {
             throw new IllegalArgumentException("Entity cannot be null");
         }
         em.merge(entity);
+        return entity;
     }
 
     @Override
