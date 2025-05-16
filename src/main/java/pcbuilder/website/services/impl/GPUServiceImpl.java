@@ -1,13 +1,14 @@
 package pcbuilder.website.services.impl;
 
+import org.springframework.stereotype.Service;
 import pcbuilder.website.models.entities.products.GPU;
 import pcbuilder.website.repositories.GPUDao;
 import pcbuilder.website.services.GPUService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
+@Service
 public class GPUServiceImpl implements GPUService {
     private final GPUDao gpuDao;
 
@@ -31,22 +32,32 @@ public class GPUServiceImpl implements GPUService {
     }
 
     @Override
-    public GPU partialUpdate(UUID id, GPU gpu) {
-        return null;
+    public GPU partialUpdate(long id, GPU gpu) {
+        gpu.setProductID(id);
+
+        return gpuDao.findById(id).map(existingGPU ->{
+            Optional.ofNullable(gpu.getChipset()).ifPresent(existingGPU::setChipset);
+            Optional.ofNullable(gpu.getMemory()).ifPresent(existingGPU::setMemory);
+            Optional.ofNullable(gpu.getCoreClock()).ifPresent(existingGPU::setCoreClock);
+            Optional.ofNullable(gpu.getBoostClock()).ifPresent(existingGPU::setBoostClock);
+            Optional.ofNullable(gpu.getColor()).ifPresent(existingGPU::setColor);
+            Optional.ofNullable(gpu.getLength()).ifPresent(existingGPU::setLength);
+            return gpuDao.save(existingGPU);
+        }).orElseThrow(() -> new RuntimeException("GPU not found"));
     }
 
     @Override
-    public Optional<GPU> findById(UUID id) {
-        return Optional.empty();
+    public Optional<GPU> findById(long id) {
+        return gpuDao.findById(id);
     }
 
     @Override
     public List<GPU> findAll() {
-        return List.of();
+        return gpuDao.findAll();
     }
 
     @Override
-    public boolean exists(UUID id) {
-        return false;
+    public boolean exists(long id) {
+        return gpuDao.exists(id);
     }
 }

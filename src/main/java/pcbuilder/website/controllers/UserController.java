@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-public class UserControllerImpl {
+public class UserController {
     private final UserService userService;
 
-    public UserControllerImpl(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 

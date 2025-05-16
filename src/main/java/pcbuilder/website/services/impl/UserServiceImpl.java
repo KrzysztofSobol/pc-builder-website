@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
             Optional.ofNullable(user.getEmail()).ifPresent(existingUser::setEmail);
             Optional.ofNullable(user.getPassword()).ifPresent(existingUser::setPassword);
             Optional.ofNullable(user.getRole()).ifPresent(existingUser::setRole);
-            return userDao.save(existingUser);
+            return userDao.update(existingUser);
         }).orElseThrow(() -> new RuntimeException("User not found"));
     }
 

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
 public interface UserService {
     User save(User user);
     void delete(User user);
