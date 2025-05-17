@@ -13,6 +13,8 @@ public interface UserService {
     User update(User user);
     User partialUpdate(UUID id, User user);
     Optional<User> findById(UUID id);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
     List<User> findAll();
     boolean exists(UUID id);
 }
