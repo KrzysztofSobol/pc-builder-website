@@ -15,6 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 
+@NamedQuery(
+        name = "User.findByUsername",
+        query = "SELECT u FROM User u WHERE u.username = :username"
+)
+@NamedQuery(
+        name = "User.findByEmail",
+        query = "SELECT u FROM User u WHERE u.email = :email"
+)
+
 @Entity
 @Table(name = "Users")
 public class User {
