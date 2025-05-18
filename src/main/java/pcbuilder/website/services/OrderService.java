@@ -1,15 +1,16 @@
 package pcbuilder.website.services;
 
+import pcbuilder.website.models.dto.orders.OrderDto;
 import pcbuilder.website.models.entities.Order;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
-    Order save(Order user);
-    void delete(Order user);
-    Order update(Order user);
-    Order partialUpdate(long id, Order user);
+    Order save(OrderDto order);
+    void delete(Order order);
+    Order update(Order order);
+    Order partialUpdate(long id, Order order);
     Optional<Order> findById(long id);
     List<Order> findAll();
     boolean exists(long id);

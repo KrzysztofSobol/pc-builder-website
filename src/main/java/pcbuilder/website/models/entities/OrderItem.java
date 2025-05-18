@@ -1,5 +1,6 @@
 package pcbuilder.website.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class OrderItem {
     @GeneratedValue
     private Long orderItemID;
     @ManyToOne
+    @JsonIgnore
     private Order order;
     @ManyToOne
     private Product product;

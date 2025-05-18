@@ -1,5 +1,6 @@
 package pcbuilder.website.services.impl;
 
+import org.springframework.stereotype.Service;
 import pcbuilder.website.models.entities.Product;
 import pcbuilder.website.repositories.ProductDao;
 import pcbuilder.website.services.ProductService;
@@ -7,6 +8,7 @@ import pcbuilder.website.services.ProductService;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ProdcutServiceImpl implements ProductService {
     private final ProductDao productDao;
 
