@@ -42,7 +42,7 @@ public class GPUServiceImpl implements GPUService {
             Optional.ofNullable(gpu.getBoostClock()).ifPresent(existingGPU::setBoostClock);
             Optional.ofNullable(gpu.getColor()).ifPresent(existingGPU::setColor);
             Optional.ofNullable(gpu.getLength()).ifPresent(existingGPU::setLength);
-            return gpuDao.save(existingGPU);
+            return gpuDao.update(existingGPU);
         }).orElseThrow(() -> new RuntimeException("GPU not found"));
     }
 

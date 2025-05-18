@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
         return orderDao.findById(id).map(existingOrder -> {
             Optional.ofNullable(order.getUser()).ifPresent(existingOrder::setUser);
             Optional.ofNullable(order.getOrderDate()).ifPresent(existingOrder::setOrderDate);
-            return existingOrder;
+            return orderDao.update(existingOrder);
         }).orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
