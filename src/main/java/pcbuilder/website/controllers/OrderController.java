@@ -23,7 +23,7 @@ public class OrderController {
 
     @PostMapping(path = "/orders")
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderDto order) {
-        Order orderEntity = orderService.save(order);
+        Order orderEntity = orderService.save(order); // CHANGE IT do it takes Order and not OrderDto for better project structure!!!!
         OrderResponseDto orderResponse = mapper.mapTo(orderEntity);
         return new ResponseEntity<>(orderResponse, HttpStatus.OK);
     }
