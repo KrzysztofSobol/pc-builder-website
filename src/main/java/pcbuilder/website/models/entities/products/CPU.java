@@ -22,6 +22,7 @@ import pcbuilder.website.models.entities.Product;
 @PrimaryKeyJoinColumn(name = "productID")
 @DiscriminatorValue("CPU")
 public class CPU extends Product {
+    private String socket;
     private Integer coreCount;
     private Double coreClock;
     private Double boostClock;
