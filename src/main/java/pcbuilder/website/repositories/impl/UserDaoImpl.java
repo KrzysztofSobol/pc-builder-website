@@ -14,6 +14,7 @@ public class UserDaoImpl extends GenericDaoImpl<User, UUID> implements UserDao {
     @Override
     @Transactional
     public Optional<User> findByUsername(String username) {
+        // zwalidowac pan
         TypedQuery<User> query = em.createNamedQuery("User.findByUsername", User.class);
         query.setParameter("username", username);
         return query.getResultStream().findFirst();
