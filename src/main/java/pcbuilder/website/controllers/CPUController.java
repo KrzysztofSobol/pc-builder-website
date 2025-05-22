@@ -58,4 +58,17 @@ public class CPUController {
         cpuService.delete(cpuEntity);
         return new ResponseEntity<>(cpuEntity, HttpStatus.OK);
     }
+    @GetMapping(path = "/cpus/filter")
+    public ResponseEntity<List<CPU>> getFilteredCPUs(
+            @RequestParam(required = false) String socket,
+            @RequestParam(required = false) Integer coreCount,
+            @RequestParam(required = false) Double minCoreClock,
+            @RequestParam(required = false) Double maxCoreClock,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ) {
+        List<CPU> filteredCPUs = cpuService.filterCPUs(socket, coreCount, minCoreClock, maxCoreClock, minPrice, maxPrice);
+        return new ResponseEntity<>(filteredCPUs, HttpStatus.OK);
+    }
+
 }

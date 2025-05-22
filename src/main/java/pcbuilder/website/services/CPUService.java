@@ -13,4 +13,5 @@ public interface CPUService {
     Optional<CPU> findById(long id);
     List<CPU> findAll();
     boolean exists(long id);
+    List<CPU> filterCPUs(String socket, Integer coreCount, Double minCoreClock, Double maxCoreClock, Double minPrice, Double maxPrice);
 }

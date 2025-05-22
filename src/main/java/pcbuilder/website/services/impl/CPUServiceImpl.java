@@ -33,6 +33,13 @@ public class CPUServiceImpl implements CPUService {
             Optional.ofNullable(cpu.getTdp()).ifPresent(existingCPU::setTdp);
             Optional.ofNullable(cpu.getGraphics()).ifPresent(existingCPU::setGraphics);
             Optional.ofNullable(cpu.getSmt()).ifPresent(existingCPU::setSmt);
+
+            Optional.ofNullable(cpu.getName()).ifPresent(existingCPU::setName);
+            Optional.ofNullable(cpu.getPrice()).ifPresent(existingCPU::setPrice);
+            Optional.ofNullable(cpu.getDescription()).ifPresent(existingCPU::setDescription);
+            Optional.ofNullable(cpu.getImageUrl()).ifPresent(existingCPU::setImageUrl);
+            Optional.ofNullable(cpu.getStock()).ifPresent(existingCPU::setStock);
+
             return cpuDao.update(existingCPU);
         }).orElseThrow(() -> new RuntimeException("CPU not found"));
     }
@@ -42,4 +49,9 @@ public class CPUServiceImpl implements CPUService {
     public List<CPU> findAll(){return cpuDao.findAll();}
     @Override
     public boolean exists(long id){return cpuDao.exists(id);}
+    @Override
+    public List<CPU> filterCPUs(String socket, Integer coreCount, Double minCoreClock, Double maxCoreClock, Double minPrice, Double maxPrice) {
+        return cpuDao.filterByCriteria(socket, coreCount, minCoreClock, maxCoreClock, minPrice, maxPrice);
+    }
+
 }
