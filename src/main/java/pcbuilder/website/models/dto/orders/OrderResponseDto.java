@@ -17,6 +17,7 @@ public class OrderResponseDto {
     private Long orderID;
     private UUID userID;
     private String username;
+    private RecipientDto recipient;
     private LocalDateTime orderDate;
     private List<OrderItemResponseDto> items;
     private Double totalPrice;

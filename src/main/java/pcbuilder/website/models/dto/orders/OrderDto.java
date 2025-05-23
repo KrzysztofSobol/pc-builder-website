@@ -14,5 +14,6 @@ import java.util.UUID;
 @Builder
 public class OrderDto {
     private UUID userID;
+    private RecipientDto recipient;
     private List<OrderItemDto> products;
 }
