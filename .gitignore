@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# React frontend (pcBuilderFrontend)
+pcBuilderFrontend/node_modules/
+pcBuilderFrontend/dist/
+pcBuilderFrontend/.vite/
+pcBuilderFrontend/.DS_Store
+pcBuilderFrontend/.env.local
+pcBuilderFrontend/.env.*.local
+pcBuilderFrontend/.eslintcache
+pcBuilderFrontend/npm-debug.log*
+pcBuilderFrontend/yarn-debug.log*
+pcBuilderFrontend/yarn-error.log*
+pcBuilderFrontend/pnpm-debug.log*
