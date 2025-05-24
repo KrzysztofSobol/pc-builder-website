@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pcbuilder.website.enums.OrderStatus;
 import pcbuilder.website.enums.ShipmentMethod;
 
 import java.time.LocalDateTime;
@@ -18,15 +19,19 @@ import java.util.List;
 @Entity
 @Table(name = "Orders")
 public class Order {
-    @Id
-    @GeneratedValue
+    @Id  @GeneratedValue
     private Long orderID;
 
     @ManyToOne
     private User user;
+
+    @Enumerated(EnumType.STRING)  @Column(nullable = false)  @Builder.Default
+    private OrderStatus status = OrderStatus.PENDING_PAYMENT;
+
     @Enumerated(EnumType.STRING)
     private ShipmentMethod shipmentMethod;
-    @ManyToOne
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Recipient recipient;
     private LocalDateTime orderDate;
 

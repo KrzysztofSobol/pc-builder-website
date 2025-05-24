@@ -1,7 +1,7 @@
 package pcbuilder.website.services.impl;
 
-import io.swagger.v3.oas.models.links.Link;
 import org.springframework.stereotype.Service;
+import pcbuilder.website.enums.OrderStatus;
 import pcbuilder.website.models.dto.orders.OrderDto;
 import pcbuilder.website.models.dto.orders.OrderItemDto;
 import pcbuilder.website.models.entities.Order;
@@ -31,36 +31,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order save(OrderDto orderDto) {
-        User user = userDao.findById(orderDto.getUserID()).orElseThrow(() -> new RuntimeException("User not found"));
+    public Order save(Order order) {
+        User user = userDao.findById(order.getUser().getUserID()).orElseThrow(() -> new RuntimeException("User not found"));
 
-        Order order = Order.builder()
-                .user(user)
-                .orderDate(LocalDateTime.now())
-                .build();
+        order.setUser(user);
 
-        List<OrderItem> orderItems = new LinkedList<>();
+        for(OrderItem item : order.getOrderItems()){
+            Product product = productDao.findById(item.getProduct().getProductID()).orElseThrow(() -> new RuntimeException("Product not found"));
 
-        for(OrderItemDto itemDto : orderDto.getProducts()){
-            Product product = productDao.findById(itemDto.getProductID()).orElseThrow(() -> new RuntimeException("Product not found"));
-
-            if(product.getStock() < itemDto.getQuantity()){
+            if(product.getStock() < item.getQuantity()){
                 throw new RuntimeException("Not enough stock");
             }
 
-            OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .product(product)
-                    .quantity(itemDto.getQuantity())
-                    .build();
+            item.setProduct(product);
 
-            orderItems.add(orderItem);
-
-            product.setStock(product.getStock() - itemDto.getQuantity());
+            product.setStock(product.getStock() - item.getQuantity());
             productDao.update(product);
         }
 
-        order.setOrderItems(orderItems);
         return orderDao.save(order);
     }
 
