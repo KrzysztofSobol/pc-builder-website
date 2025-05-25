@@ -37,4 +37,14 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+
+    // Stripe-related stuff
+    @Column(name = "stripe_payment_intent_id")
+    private String stripePaymentIntentId;
+
+    @Column(name = "total_amount")
+    private Double totalAmount;
+
+    @Column(name = "payment_date")
+    private LocalDateTime paymentDate;
 }

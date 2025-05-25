@@ -1,9 +1,6 @@
 package pcbuilder.website.services.impl;
 
 import org.springframework.stereotype.Service;
-import pcbuilder.website.enums.OrderStatus;
-import pcbuilder.website.models.dto.orders.OrderDto;
-import pcbuilder.website.models.dto.orders.OrderItemDto;
 import pcbuilder.website.models.entities.Order;
 import pcbuilder.website.models.entities.OrderItem;
 import pcbuilder.website.models.entities.Product;
@@ -13,8 +10,6 @@ import pcbuilder.website.repositories.ProductDao;
 import pcbuilder.website.repositories.UserDao;
 import pcbuilder.website.services.OrderService;
 
-import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setUser(user);
 
+        Double totalAmount = 0d;
         for(OrderItem item : order.getOrderItems()){
             Product product = productDao.findById(item.getProduct().getProductID()).orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -43,11 +39,11 @@ public class OrderServiceImpl implements OrderService {
                 throw new RuntimeException("Not enough stock");
             }
 
-            item.setProduct(product);
-
             product.setStock(product.getStock() - item.getQuantity());
-            productDao.update(product);
+            item.setProduct(product);
+            totalAmount += Math.round(product.getPrice() * item.getQuantity() * 100.0) / 100.0;
         }
+        order.setTotalAmount(totalAmount);
 
         return orderDao.save(order);
     }
