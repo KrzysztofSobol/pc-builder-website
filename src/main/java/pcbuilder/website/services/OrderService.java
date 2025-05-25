@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
-    Order save(OrderDto order);
+    Order save(Order order);
     void delete(Order order);
     Order update(Order order);
     Order partialUpdate(long id, Order order);

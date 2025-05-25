@@ -14,17 +14,19 @@ import pcbuilder.website.services.OrderService;
 @RestController
 public class OrderController {
     private final OrderService orderService;
-    private final Mapper<Order, OrderResponseDto> mapper;
+    private final Mapper<Order, OrderResponseDto> orderResponseMapper;
+    private final Mapper<Order, OrderDto> orderMapper;
 
-    public OrderController(OrderService orderService, Mapper<Order, OrderResponseDto> mapper) {
+    public OrderController(OrderService orderService, Mapper<Order, OrderResponseDto> orderResponseMapper, Mapper<Order, OrderDto> orderMapper) {
         this.orderService = orderService;
-        this.mapper = mapper;
+        this.orderResponseMapper = orderResponseMapper;
+        this.orderMapper = orderMapper;
     }
 
     @PostMapping(path = "/orders")
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderDto order) {
-        Order orderEntity = orderService.save(order); // CHANGE IT do it takes Order and not OrderDto for better project structure!!!!
-        OrderResponseDto orderResponse = mapper.mapTo(orderEntity);
-        return new ResponseEntity<>(orderResponse, HttpStatus.OK);
+        Order orderEntity = orderMapper.mapFrom(order);
+        Order savedOrder = orderService.save(orderEntity);
+        return new ResponseEntity<>(orderResponseMapper.mapTo(savedOrder), HttpStatus.OK);
     }
 }

@@ -1,11 +1,10 @@
-package pcbuilder.website.services.impl;
+package pcbuilder.website.services.impl.products;
 
 import org.springframework.stereotype.Service;
 import pcbuilder.website.models.entities.products.CPU;
 import pcbuilder.website.repositories.CPUDao;
 import pcbuilder.website.services.CPUService;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 

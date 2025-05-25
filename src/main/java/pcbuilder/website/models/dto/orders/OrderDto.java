@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pcbuilder.website.enums.ShipmentMethod;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,5 +16,6 @@ import java.util.UUID;
 public class OrderDto {
     private UUID userID;
     private RecipientDto recipient;
+    private ShipmentMethod shipmentMethod;
     private List<OrderItemDto> products;
 }

@@ -1,4 +1,4 @@
-package pcbuilder.website.repositories.impl;
+package pcbuilder.website.repositories.impl.prodcuts;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 import pcbuilder.website.models.entities.products.CPU;
 import pcbuilder.website.repositories.CPUDao;
+import pcbuilder.website.repositories.impl.GenericDaoImpl;
 
 import java.util.List;
 
