@@ -5,10 +5,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.enums.Role;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.auth.AuthRequest;
@@ -21,6 +20,7 @@ import pcbuilder.website.utils.JwtUtil;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,27 +29,38 @@ public class AuthController {
     private final UserService userService;
     private final Mapper<User, UserDto> userMapper;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(JwtUtil jwtUtil, UserService userService, Mapper<User, UserDto> userMapper, AuthenticationManager authenticationManager) {
+    public AuthController(JwtUtil jwtUtil, UserService userService, Mapper<User, UserDto> userMapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.userMapper = userMapper;
         this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
-        final User user = userService.findByEmail(authRequest.getEmail()).get();
-        final String token = jwtUtil.generateToken(user);
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+            );
 
-        Cookie jwtCookie = new Cookie("auth_token", token);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(86400);
-        jwtCookie.setHttpOnly(true);
-        //jwtCookie.setSecure(true); // this sends only through "https", swagger is "http" so no use for it for now
-        response.addCookie(jwtCookie);
+            final User user = userService.findByEmail(authRequest.getEmail()).get();
+            final String token = jwtUtil.generateToken(user);
 
-        return ResponseEntity.ok(new AuthResponse(token, userMapper.mapTo(user)));
+            Cookie jwtCookie = new Cookie("auth_token", token);
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(86400);
+            jwtCookie.setHttpOnly(true);
+            //jwtCookie.setSecure(true); // this sends only through "https", swagger is "http" so no use for it for now
+            response.addCookie(jwtCookie);
+
+            return ResponseEntity.ok(new AuthResponse(token, userMapper.mapTo(user)));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Nieprawidłowy email lub hasło."));
+        }
     }
 
     @PostMapping("/register")
@@ -69,7 +80,7 @@ public class AuthController {
         User user = User.builder()
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
-                .password(registerRequest.getPassword())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(Role.Customer)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -86,4 +97,27 @@ public class AuthController {
 
         return new ResponseEntity<>(new AuthResponse(token, userMapper.mapTo(savedUser)), HttpStatus.OK);
     }
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@CookieValue(name = "auth_token", required = false) String token) {
+        try {
+            String email = jwtUtil.extractEmail(token);
+            Optional<User> userOpt = userService.findByEmail(email);
+
+            return userOpt
+                    .map(user -> ResponseEntity.ok(userMapper.mapTo(user)))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("auth_token", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import LoginForm from './components/LoginForm';
+import { RegisterForm } from './components/RegisterForm';
+import MainPage from './components/MainPage';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [showRegister, setShowRegister] = useState(false);
+
+  useEffect(() => {
+    fetch('http://localhost:8080/auth/me', {
+      credentials: 'include',
+    })
+      .then(res => {
+        if (res.ok) {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setCheckingSession(false));
+  }, []);
+
+  const handleLogin = () => setIsAuthenticated(true);
+  const handleLogout = () => setIsAuthenticated(false);
+
+  if (checkingSession) return <p className="text-center mt-5">Ładowanie...</p>;
+  if (isAuthenticated) return <MainPage onLogout={handleLogout} />;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="container py-4">
+      {showRegister ? (
+        <>
+          <RegisterForm onRegisterSuccess={handleLogin} />
+          <p className="mt-3 text-center">
+            Masz już konto?{' '}
+            <button className="btn btn-link" onClick={() => setShowRegister(false)}>
+              Zaloguj się
+            </button>
+          </p>
+        </>
+      ) : (
+        <>
+          <LoginForm onLoginSuccess={handleLogin} />
+          <p className="mt-3 text-center">
+            Nie masz konta?{' '}
+            <button className="btn btn-link" onClick={() => setShowRegister(true)}>
+              Zarejestruj się
+            </button>
+          </p>
+        </>
+      )}
+    </div>
+  );
 }
-
-export default App
