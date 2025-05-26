@@ -1,4 +1,4 @@
-package pcbuilder.website.services.impl;
+package pcbuilder.website.services.impl.products;
 
 import org.springframework.stereotype.Service;
 import pcbuilder.website.models.entities.products.GPU;
