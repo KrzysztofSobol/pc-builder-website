@@ -97,19 +97,7 @@ public class AuthController {
 
         return new ResponseEntity<>(new AuthResponse(token, userMapper.mapTo(savedUser)), HttpStatus.OK);
     }
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(@CookieValue(name = "auth_token", required = false) String token) {
-        try {
-            String email = jwtUtil.extractEmail(token);
-            Optional<User> userOpt = userService.findByEmail(email);
 
-            return userOpt
-                    .map(user -> ResponseEntity.ok(userMapper.mapTo(user)))
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("auth_token", null);
@@ -119,5 +107,4 @@ public class AuthController {
         response.addCookie(cookie);
         return ResponseEntity.noContent().build();
     }
-
 }
