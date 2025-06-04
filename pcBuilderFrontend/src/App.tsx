@@ -64,6 +64,16 @@ export default function App() {
             path="*"
             element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
         />
+
+        <Route
+            path="/stripe/success"
+            element={<div> clap clap komponent tutaj koncowy z podsumowaniem zamowienia proszem </div>}
+        />
+
+        <Route
+            path="/stripe/cancel"
+            element={<div> boohoo stripe failed or u did something wrong component here </div>}
+        />
       </Routes>
     </Router>
   );
