@@ -1,11 +1,15 @@
 package pcbuilder.website.models.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class ProductDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long productID;
     private String name;
     private Double price;
