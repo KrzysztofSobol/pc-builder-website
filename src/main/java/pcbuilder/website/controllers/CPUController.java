@@ -60,14 +60,18 @@ public class CPUController {
     }
     @GetMapping(path = "/cpus/filter")
     public ResponseEntity<List<CPU>> getFilteredCPUs(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String socket,
-            @RequestParam(required = false) Integer coreCount,
+            @RequestParam(required = false) Integer minCoreCount,
+            @RequestParam(required = false) Integer maxCoreCount,
             @RequestParam(required = false) Double minCoreClock,
             @RequestParam(required = false) Double maxCoreClock,
             @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Boolean graphics,
+            @RequestParam(required = false) Boolean smt
     ) {
-        List<CPU> filteredCPUs = cpuService.filterCPUs(socket, coreCount, minCoreClock, maxCoreClock, minPrice, maxPrice);
+        List<CPU> filteredCPUs = cpuService.filterCPUs(name, socket, minCoreCount, maxCoreCount, minCoreClock, maxCoreClock, minPrice, maxPrice, graphics, smt);
         return new ResponseEntity<>(filteredCPUs, HttpStatus.OK);
     }
 

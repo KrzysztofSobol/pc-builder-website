@@ -49,8 +49,9 @@ public class CPUServiceImpl implements CPUService {
     @Override
     public boolean exists(long id){return cpuDao.exists(id);}
     @Override
-    public List<CPU> filterCPUs(String socket, Integer coreCount, Double minCoreClock, Double maxCoreClock, Double minPrice, Double maxPrice) {
-        return cpuDao.filterByCriteria(socket, coreCount, minCoreClock, maxCoreClock, minPrice, maxPrice);
+    public List<CPU> filterCPUs(String name, String socket, Integer minCoreCount, Integer maxCoreCount, Double minCoreClock,
+                                Double maxCoreClock, Double minPrice, Double maxPrice,Boolean graphics, Boolean smt) {
+        return cpuDao.filterByCriteria(name, socket, minCoreCount, maxCoreCount, minCoreClock, maxCoreClock, minPrice, maxPrice, graphics, smt);
     }
 
 }
