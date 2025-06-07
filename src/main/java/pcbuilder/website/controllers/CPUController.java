@@ -1,63 +1,81 @@
 package pcbuilder.website.controllers;
 
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pcbuilder.website.mappers.Mapper;
+import pcbuilder.website.models.dto.products.CPUDto;
 import pcbuilder.website.models.entities.products.CPU;
+import pcbuilder.website.repositories.CPUDao;
 import pcbuilder.website.services.CPUService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class CPUController {
     private final CPUService cpuService;
+    private final Mapper<CPU, CPUDto> mapper;
 
-    public CPUController(CPUService cpuService) {this.cpuService = cpuService;}
+    public CPUController(CPUService cpuService, Mapper<CPU, CPUDto> mapper) {
+        this.cpuService = cpuService;
+        this.mapper = mapper;
+    }
 
     @PostMapping(path = "/cpus")
-    public ResponseEntity<CPU> createCPU(@RequestBody CPU cpu) {
-        CPU cpuEntity = cpuService.save(cpu);
-        return new ResponseEntity<>(cpuEntity, HttpStatus.CREATED);
+    public ResponseEntity<CPUDto> createCPU(@RequestBody CPUDto cpu) {
+        CPU cpuEntity = mapper.mapFrom(cpu);
+        CPU savedCPU = cpuService.save(cpuEntity);
+        return new ResponseEntity<>(mapper.mapTo(savedCPU), HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/cpus/{id}")
-    public ResponseEntity<CPU> getCPU(@PathVariable long id) {
+    public ResponseEntity<CPUDto> getCPU(@PathVariable long id) {
         Optional<CPU> cpuEntity = cpuService.findById(id);
-        return cpuEntity.map(cpu -> new ResponseEntity<>(cpu, HttpStatus.OK))
+        return cpuEntity.map(cpu -> new ResponseEntity<>(mapper.mapTo(cpu), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @GetMapping(path = "/cpus")
-    public ResponseEntity<List<CPU>> getCPUs() {
+    public List<CPUDto> getCPUs() {
         List<CPU> cpus = cpuService.findAll();
-        return new ResponseEntity<>(cpus, HttpStatus.OK);
+        return cpus.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
+
     @PutMapping(path = "/cpus/{id}")
-    public ResponseEntity<CPU> updateCPU(@PathVariable long id, @RequestBody CPU cpu) {
+    public ResponseEntity<CPUDto> updateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
         if(!cpuService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         cpu.setProductID(id);
-        CPU cpuEntity = cpuService.update(cpu);
-        return new ResponseEntity<>(cpuEntity, HttpStatus.OK);
+        CPU cpuEntity = mapper.mapFrom(cpu);
+        CPU updatedCPU = cpuService.update(cpuEntity);
+        return new ResponseEntity<>(mapper.mapTo(updatedCPU), HttpStatus.OK);
     }
+
     @PatchMapping(path = "/cpus/{id}")
-    public ResponseEntity<CPU> partialUpdateCPU(@PathVariable long id, @RequestBody CPU cpu) {
+    public ResponseEntity<CPUDto> partialUpdateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
         if(!cpuService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        CPU cpuEntity = cpuService.partialUpdate(id, cpu);
-        return new ResponseEntity<>(cpuEntity, HttpStatus.OK);
+
+        cpu.setProductID(id);
+        CPU cpuEntity = mapper.mapFrom(cpu);
+        CPU updatedCPU = cpuService.partialUpdate(id, cpuEntity);
+        return new ResponseEntity<>(mapper.mapTo(updatedCPU), HttpStatus.OK);
     }
+
     @DeleteMapping(path = "/cpus/{id}")
-    public ResponseEntity<CPU> deleteCPU(@PathVariable long id) {
-        if(!cpuService.exists(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        CPU cpuEntity = cpuService.findById(id).orElse(null);
-        cpuService.delete(cpuEntity);
-        return new ResponseEntity<>(cpuEntity, HttpStatus.OK);
+    public ResponseEntity<Void> deleteCPU(@PathVariable long id) {
+        return cpuService.findById(id).map(cpu -> {
+            cpuService.delete(cpu);
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @GetMapping(path = "/cpus/filter")
     public ResponseEntity<List<CPU>> getFilteredCPUs(
             @RequestParam(required = false) String name,
