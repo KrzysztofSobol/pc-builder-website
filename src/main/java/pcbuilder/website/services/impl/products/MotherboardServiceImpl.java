@@ -20,20 +20,20 @@ public class MotherboardServiceImpl implements MotherboardService {
     @Override
     public Motherboard update(Motherboard motherboard) {return motherboardDao.update(motherboard);}
     @Override
-    public Motherboard partialUpdate(long id, Motherboard motherboard) {
-        motherboard.setProductID(id);
+    public Motherboard partialUpdate(long id, Motherboard mb) {
+        mb.setProductID(id);
         return motherboardDao.findById(id).map(existingMotherboard ->{
-            Optional.ofNullable(existingMotherboard.getName()).ifPresent(existingMotherboard::setName);
-            Optional.ofNullable(existingMotherboard.getPrice()).ifPresent(existingMotherboard::setPrice);
-            Optional.ofNullable(existingMotherboard.getDescription()).ifPresent(existingMotherboard::setDescription);
-            Optional.ofNullable(existingMotherboard.getImageUrl()).ifPresent(existingMotherboard::setImageUrl);
-            Optional.ofNullable(existingMotherboard.getStock()).ifPresent(existingMotherboard::setStock);
+            Optional.ofNullable(mb.getName()).ifPresent(existingMotherboard::setName);
+            Optional.ofNullable(mb.getPrice()).ifPresent(existingMotherboard::setPrice);
+            Optional.ofNullable(mb.getDescription()).ifPresent(existingMotherboard::setDescription);
+            Optional.ofNullable(mb.getImageUrl()).ifPresent(existingMotherboard::setImageUrl);
+            Optional.ofNullable(mb.getStock()).ifPresent(existingMotherboard::setStock);
 
-            Optional.ofNullable(existingMotherboard.getSocket()).ifPresent(existingMotherboard::setSocket);
-            Optional.ofNullable(existingMotherboard.getFormFactor()).ifPresent(existingMotherboard::setFormFactor);
-            Optional.ofNullable(existingMotherboard.getMaxMemory()).ifPresent(existingMotherboard::setMaxMemory);
-            Optional.ofNullable(existingMotherboard.getMemorySlots()).ifPresent(existingMotherboard::setMemorySlots);
-            Optional.ofNullable(existingMotherboard.getColor()).ifPresent(existingMotherboard::setColor);
+            Optional.ofNullable(mb.getSocket()).ifPresent(existingMotherboard::setSocket);
+            Optional.ofNullable(mb.getFormFactor()).ifPresent(existingMotherboard::setFormFactor);
+            Optional.ofNullable(mb.getMaxMemory()).ifPresent(existingMotherboard::setMaxMemory);
+            Optional.ofNullable(mb.getMemorySlots()).ifPresent(existingMotherboard::setMemorySlots);
+            Optional.ofNullable(mb.getColor()).ifPresent(existingMotherboard::setColor);
 
             return motherboardDao.save(existingMotherboard);
         }).orElseThrow(() -> new RuntimeException("Motherboard not found"));

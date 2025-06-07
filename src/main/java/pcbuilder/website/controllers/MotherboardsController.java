@@ -3,62 +3,79 @@ package pcbuilder.website.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pcbuilder.website.mappers.Mapper;
+import pcbuilder.website.models.dto.products.MotherboardDto;
 import pcbuilder.website.models.entities.products.Motherboard;
 import pcbuilder.website.services.MotherboardService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class MotherboardsController {
     private final MotherboardService motherboardService;
+    private final Mapper<Motherboard, MotherboardDto> mapper;
 
-    public MotherboardsController(MotherboardService motherboardService){this.motherboardService = motherboardService;}
+    public MotherboardsController(MotherboardService motherboardService, Mapper<Motherboard, MotherboardDto> mapper){
+        this.motherboardService = motherboardService;
+        this.mapper = mapper;
+    }
 
     @PostMapping(path = "/motherboards")
-    public ResponseEntity<Motherboard> addMotherboard(@RequestBody Motherboard motherboard){
-        Motherboard motherboardEntity = motherboardService.save(motherboard);
-        return new ResponseEntity<>(motherboardEntity, HttpStatus.CREATED);
+    public ResponseEntity<MotherboardDto> addMotherboard(@RequestBody MotherboardDto mb){
+        Motherboard mbEntity = mapper.mapFrom(mb);
+        Motherboard savedMb = motherboardService.save(mbEntity);
+        return new ResponseEntity<>(mapper.mapTo(savedMb), HttpStatus.CREATED);
     }
+
     @GetMapping(path = "/motherboards/{id}")
-    public ResponseEntity<Motherboard> getMotherboard(@PathVariable long id){
-        Optional<Motherboard> motherboardEntity = motherboardService.findById(id);
-        return motherboardEntity.map(motherboard -> new ResponseEntity<>(motherboard, HttpStatus.OK))
+    public ResponseEntity<MotherboardDto> getMotherboard(@PathVariable long id){
+        Optional<Motherboard> mbEntity = motherboardService.findById(id);
+        return mbEntity.map(motherboard -> new ResponseEntity<>(mapper.mapTo(motherboard), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @GetMapping(path = "/motherboards")
-    public ResponseEntity<List<Motherboard>> getMotherboards(){
+    public List<MotherboardDto> getMotherboards(){
         List<Motherboard> motherboards = motherboardService.findAll();
-        return new ResponseEntity<>(motherboards, HttpStatus.OK);
+        return motherboards.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
+
     @PutMapping(path = "/motherboards/{id}")
-    public ResponseEntity<Motherboard> updateMotherboard(@PathVariable long id, @RequestBody Motherboard motherboard){
+    public ResponseEntity<MotherboardDto> updateMotherboard(@PathVariable long id, @RequestBody MotherboardDto motherboard){
         if(!motherboardService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
         motherboard.setProductID(id);
-        Motherboard motherboardEntity = motherboardService.update(motherboard);
-        return new ResponseEntity<>(motherboardEntity, HttpStatus.OK);
+        Motherboard mbEntity = mapper.mapFrom(motherboard);
+        Motherboard updatedMb = motherboardService.update(mbEntity);
+        return new ResponseEntity<>(mapper.mapTo(updatedMb), HttpStatus.OK);
     }
+
     @PatchMapping(path = "/motherboards/{id}")
-    public ResponseEntity<Motherboard> partialUpdateMotherboard(@PathVariable long id, @RequestBody Motherboard motherboard){
+    public ResponseEntity<MotherboardDto> partialUpdateMotherboard(@PathVariable long id, @RequestBody MotherboardDto motherboard){
         if(!motherboardService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Motherboard motherboardEntity = motherboardService.partialUpdate(id, motherboard);
-        return new ResponseEntity<>(motherboardEntity, HttpStatus.OK);
+
+        motherboard.setProductID(id);
+        Motherboard mbEntity = mapper.mapFrom(motherboard);
+        Motherboard savedMb = motherboardService.partialUpdate(id, mbEntity);
+        return new ResponseEntity<>(mapper.mapTo(savedMb), HttpStatus.OK);
     }
+
     @DeleteMapping(path = "/motherboards/{id}")
-    public ResponseEntity<Motherboard> deleteMotherboard(@PathVariable long id){
-        if(!motherboardService.exists(id)){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        Motherboard motherboardEntity = motherboardService.findById(id).orElse(null);
-        motherboardService.delete(motherboardEntity);
-        return new ResponseEntity<>(motherboardEntity, HttpStatus.OK);
+    public ResponseEntity<Void> deleteMotherboard(@PathVariable long id){
+        return motherboardService.findById(id).map(mb -> {
+            motherboardService.delete(mb);
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @GetMapping("/motherboards/filter")
-    public ResponseEntity<List<Motherboard>> getFilteredMotherboards(
+    public List<MotherboardDto> getFilteredMotherboards(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String socket,
             @RequestParam(required = false) String formFactor,
@@ -70,6 +87,6 @@ public class MotherboardsController {
             @RequestParam(required = false) Double maxPrice
     ){
         List<Motherboard> motherboards = motherboardService.filterMotherboards(name,socket, formFactor, maxMemory,minMemorySlots,maxMemorySlots,color,minPrice,maxPrice);
-        return new ResponseEntity<>(motherboards, HttpStatus.OK);
+        return motherboards.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 }
