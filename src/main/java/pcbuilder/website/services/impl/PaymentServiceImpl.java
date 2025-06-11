@@ -118,7 +118,7 @@ public class PaymentServiceImpl implements PaymentService {
             order.setStatus(OrderStatus.PAYMENT_FAILED);
             orderService.update(order);
 
-            // Restore product stock
+            // Restore product.ts stock
             restoreProductStock(order);
         } catch (StripeException e) {
         }

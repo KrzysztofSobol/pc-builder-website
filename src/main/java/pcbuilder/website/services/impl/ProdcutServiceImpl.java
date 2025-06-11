@@ -1,5 +1,7 @@
 package pcbuilder.website.services.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pcbuilder.website.models.entities.Product;
 import pcbuilder.website.repositories.ProductDao;
@@ -53,6 +55,10 @@ public class ProdcutServiceImpl implements ProductService {
     @Override
     public List<Product> findAll() {
         return productDao.findAll();
+    }
+
+    public Page<Product> findPaged(Pageable pageable){
+        return productDao.findPaged(pageable);
     }
 
     @Override

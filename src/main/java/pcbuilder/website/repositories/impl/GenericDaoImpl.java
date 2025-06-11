@@ -7,6 +7,9 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import pcbuilder.website.repositories.GenericDao;
 
@@ -67,6 +70,27 @@ public class GenericDaoImpl<T,K> implements GenericDao<T, K>  {
         TypedQuery<T> allQuery = em.createQuery(all);
 
         return allQuery.getResultList();
+    }
+
+    @Override
+    public Page<T> findPaged(Pageable pageable) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<T> cq = cb.createQuery(classType);
+        Root<T> root = cq.from(classType);
+        cq.select(root);
+
+        TypedQuery<T> query = em.createQuery(cq);
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        List<T> resultList = query.getResultList();
+
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<T> countRoot = countQuery.from(classType);
+        countQuery.select(cb.count(countRoot));
+        Long total = em.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(resultList, pageable, total);
     }
 
     @Override

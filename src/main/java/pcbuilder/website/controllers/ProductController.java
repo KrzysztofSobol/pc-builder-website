@@ -1,5 +1,8 @@
 package pcbuilder.website.controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +44,15 @@ public class ProductController {
     @GetMapping(path = "/products")
     public List<ProductDto> getProducts() {
         return productService.findAll().stream().map(mapper::mapTo).collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "/products/paged")
+    public ResponseEntity<Page<Product>> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products = productService.findPaged(pageable);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PutMapping(path = "/products/{id}")

@@ -1,5 +1,7 @@
 package pcbuilder.website.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import pcbuilder.website.models.entities.Product;
 
 import java.util.List;
@@ -12,5 +14,6 @@ public interface ProductService {
     Product partialUpdate(long id, Product product);
     Optional<Product> findById(long id);
     List<Product> findAll();
+    Page<Product> findPaged(Pageable pageable);
     boolean exists(long id);
 }
