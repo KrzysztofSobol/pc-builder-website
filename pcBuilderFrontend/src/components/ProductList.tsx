@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getPagedProducts } from "../services/productService.ts";
-import type { product } from "../dtos/response/product.ts";
+import type { product } from "../dtos/both/product.ts";
 import type { pagedResponse } from "../dtos/response/pagedResponse.ts";
 
 interface CartItem extends product {
