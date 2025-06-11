@@ -7,6 +7,7 @@ import pcbuilder.website.services.GPUService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class GPUServiceImpl implements GPUService {

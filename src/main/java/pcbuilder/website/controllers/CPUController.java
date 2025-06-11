@@ -9,15 +9,19 @@ import pcbuilder.website.models.dto.products.CPUDto;
 import pcbuilder.website.models.entities.products.CPU;
 import pcbuilder.website.repositories.CPUDao;
 import pcbuilder.website.services.CPUService;
+import pcbuilder.website.services.impl.products.GPUServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
 public class CPUController {
     private final CPUService cpuService;
     private final Mapper<CPU, CPUDto> mapper;
+    private final static Logger log =
+            Logger.getLogger(GPUServiceImpl.class.getName());
 
     public CPUController(CPUService cpuService, Mapper<CPU, CPUDto> mapper) {
         this.cpuService = cpuService;
@@ -28,6 +32,7 @@ public class CPUController {
     public ResponseEntity<CPUDto> createCPU(@RequestBody CPUDto cpu) {
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU savedCPU = cpuService.save(cpuEntity);
+        log.info("Saved CPU: " + savedCPU.toString());
         return new ResponseEntity<>(mapper.mapTo(savedCPU), HttpStatus.CREATED);
     }
 
@@ -47,24 +52,28 @@ public class CPUController {
     @PutMapping(path = "/cpus/{id}")
     public ResponseEntity<CPUDto> updateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
         if(!cpuService.exists(id)) {
+            log.warning("CPU with id: " + id + " does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         cpu.setProductID(id);
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU updatedCPU = cpuService.update(cpuEntity);
+        log.info("Updated CPU: " + updatedCPU.toString());
         return new ResponseEntity<>(mapper.mapTo(updatedCPU), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/cpus/{id}")
     public ResponseEntity<CPUDto> partialUpdateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
         if(!cpuService.exists(id)) {
+            log.warning("CPU with id: " + id + " does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         cpu.setProductID(id);
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU updatedCPU = cpuService.partialUpdate(id, cpuEntity);
+        log.info("Updated CPU: " + updatedCPU.toString());
         return new ResponseEntity<>(mapper.mapTo(updatedCPU), HttpStatus.OK);
     }
 
@@ -72,6 +81,7 @@ public class CPUController {
     public ResponseEntity<Void> deleteCPU(@PathVariable long id) {
         return cpuService.findById(id).map(cpu -> {
             cpuService.delete(cpu);
+            log.info("Deleted CPU: " + cpu.toString());
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
         }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
