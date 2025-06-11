@@ -47,16 +47,16 @@ public class ProdcutServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> findById(long id) {
-        return Optional.empty();
+        return productDao.findById(id);
     }
 
     @Override
     public List<Product> findAll() {
-        return List.of();
+        return productDao.findAll();
     }
 
     @Override
     public boolean exists(long id) {
-        return false;
+        return productDao.exists(id);
     }
 }
