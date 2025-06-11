@@ -22,7 +22,7 @@ export function RegisterForm({ onRegisterSuccess }: { onRegisterSuccess: (data: 
       return;
     }
 
-    if(form.email.trim() !== ''){
+    if(form.email.trim() === ''){
       setError("Username cannot be just whitespace :P");
       return;
     }
