@@ -1,4 +1,4 @@
-import {Navigate, useLocation, useNavigate} from 'react-router-dom';
+import {Navigate, useLocation} from 'react-router-dom';
 import { useState } from 'react';
 import type { orderResponse } from '../dtos/response/orderResponse';
 import { createCheckoutSession } from '../services/stripeService';
@@ -6,7 +6,6 @@ import type { paymentRequest } from '../dtos/request/paymentRequest';
 
 export default function OrderSummary() {
     const location = useLocation();
-    const navigate = useNavigate();
     const order = location.state?.order as orderResponse;
     const [error, setError] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
