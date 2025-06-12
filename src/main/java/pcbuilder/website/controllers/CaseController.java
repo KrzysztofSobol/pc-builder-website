@@ -51,6 +51,7 @@ public class CaseController {
     }
 
     @PutMapping("/cases/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CaseDto> updateCase(@PathVariable long id, @RequestBody CaseDto dto) {
         if (!caseService.exists(id)) {
             log.warning("Case with id " + id + " not found");
@@ -64,6 +65,7 @@ public class CaseController {
     }
 
     @PatchMapping("/cases/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CaseDto> partialUpdateCase(@PathVariable long id, @RequestBody CaseDto dto) {
         if (!caseService.exists(id)) {
             log.warning("Case with id " + id + " not found");
@@ -77,6 +79,7 @@ public class CaseController {
     }
 
     @DeleteMapping("/cases/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteCase(@PathVariable long id) {
         return caseService.findById(id).map(c -> {
             caseService.delete(c);
