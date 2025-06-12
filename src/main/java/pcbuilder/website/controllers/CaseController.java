@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.CaseDto;
@@ -27,6 +28,7 @@ public class CaseController {
     }
 
     @PostMapping("/cases")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<CaseDto> createCase(@RequestBody CaseDto dto) {
         Case entity = mapper.mapFrom(dto);
         Case saved = caseService.save(entity);
@@ -35,6 +37,7 @@ public class CaseController {
     }
 
     @GetMapping("/cases/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<CaseDto> getCase(@PathVariable long id) {
         Optional<Case> entity = caseService.findById(id);
         return entity.map(e -> new ResponseEntity<>(mapper.mapTo(e), HttpStatus.OK))
@@ -42,6 +45,7 @@ public class CaseController {
     }
 
     @GetMapping("/cases")
+    @PreAuthorize("hasRole('Customer')")
     public List<CaseDto> getAllCases() {
         return caseService.findAll().stream().map(mapper::mapTo).collect(Collectors.toList());
     }
@@ -82,6 +86,7 @@ public class CaseController {
     }
 
     @GetMapping("/cases/filter")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<List<Case>> filterCases(
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String color,
