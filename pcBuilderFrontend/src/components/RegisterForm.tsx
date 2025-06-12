@@ -77,6 +77,18 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
                         required
                     />
                   </div>
+                  <div className="mb-3">
+                    <label htmlFor="confirmPassword" className="form-label">Potwierdź hasło</label>
+                    <input
+                        type="password"
+                        className="form-control"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                    />
+                  </div>
                   {error && (
                       <div className="alert alert-danger" role="alert">
                         {error}
