@@ -10,7 +10,6 @@ import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.ProductDto;
 import pcbuilder.website.models.entities.Product;
 import pcbuilder.website.services.ProductService;
-import pcbuilder.website.services.impl.ProdcutServiceImpl;
 
 import java.util.List;
 import java.util.Optional;
