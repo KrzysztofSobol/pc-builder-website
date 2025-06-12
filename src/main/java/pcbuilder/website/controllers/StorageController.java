@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.enums.StorageType;
 import pcbuilder.website.mappers.Mapper;
@@ -24,23 +25,27 @@ public class StorageController {
         this.storageMapper = storageMapper;
     }
     @PostMapping(path = "/storages")
+    @PreAuthorize( "hasRole('Admin')")
     public ResponseEntity<StorageDto> createStorage(@RequestBody StorageDto storage) {
         Storage storageEntity = storageMapper.mapFrom(storage);
         Storage savedStorage = storageService.save(storageEntity);
         return new ResponseEntity<>(storageMapper.mapTo(savedStorage), HttpStatus.CREATED);
     }
     @GetMapping(path = "/storages/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<StorageDto> getStorage(@PathVariable long id){
         Optional<Storage> storageEntity = storageService.findById(id);
         return storageEntity.map(storage -> new ResponseEntity<>(storageMapper.mapTo(storage),HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     @GetMapping(path = "/storages")
+    @PreAuthorize("hasRole('Customer')")
     public List<StorageDto> getStorages(){
         List<Storage> storages = storageService.findAll();
         return storages.stream().map(storageMapper::mapTo).collect(Collectors.toList());
     }
     @PutMapping(path = "/storages/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<StorageDto> updateStorage(@PathVariable long id, @RequestBody StorageDto storage) {
         if(!storageService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -51,6 +56,7 @@ public class StorageController {
         return new ResponseEntity<>(storageMapper.mapTo(updatedStorage),HttpStatus.OK);
     }
     @PatchMapping(path = "/storages/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<StorageDto> partialUpdateStorage(@PathVariable long id, @RequestBody StorageDto storage){
         if(!storageService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -61,6 +67,7 @@ public class StorageController {
         return new ResponseEntity<>(storageMapper.mapTo(updatedStorage),HttpStatus.OK);
     }
     @DeleteMapping(path = "/storages/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteStorage(@PathVariable long id){
         return storageService.findById(id).map(storage -> {
             storageService.delete(storage);
@@ -68,6 +75,7 @@ public class StorageController {
         }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     @GetMapping(path = "/storages/filter")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<List<StorageDto>> getFilteredStorages(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,

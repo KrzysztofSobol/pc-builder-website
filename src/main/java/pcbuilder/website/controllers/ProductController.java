@@ -27,6 +27,7 @@ public class ProductController {
     }
 
     @PostMapping(path = "/products")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
         Product productEntity = mapper.mapFrom(productDto);
         Product savedProduct = productService.save(productEntity);
@@ -34,6 +35,7 @@ public class ProductController {
     }
 
     @GetMapping(path = "/products/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<ProductDto> getProduct(@PathVariable long id) {
         Optional<Product> productEntity = productService.findById(id);
 
@@ -42,11 +44,13 @@ public class ProductController {
     }
 
     @GetMapping(path = "/products")
+    @PreAuthorize("hasRole('Customer')")
     public List<ProductDto> getProducts() {
         return productService.findAll().stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/products/paged")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<Page<Product>> getProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -56,6 +60,7 @@ public class ProductController {
     }
 
     @PutMapping(path = "/products/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable long id, @RequestBody ProductDto productDto){
         if(!productService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -68,6 +73,7 @@ public class ProductController {
     }
 
     @PatchMapping(path = "/products/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<ProductDto> patchProduct(@PathVariable long id, @RequestBody ProductDto productDto){
         if(!productService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -80,6 +86,7 @@ public class ProductController {
     }
 
     @DeleteMapping(path = "products/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteProduct(@PathVariable long id){
         return productService.findById(id).map(product -> {
             productService.delete(product);

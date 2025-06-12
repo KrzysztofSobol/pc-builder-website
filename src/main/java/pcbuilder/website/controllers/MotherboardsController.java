@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.MotherboardDto;
@@ -23,6 +24,7 @@ public class MotherboardsController {
     }
 
     @PostMapping(path = "/motherboards")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<MotherboardDto> addMotherboard(@RequestBody MotherboardDto mb){
         Motherboard mbEntity = mapper.mapFrom(mb);
         Motherboard savedMb = motherboardService.save(mbEntity);
@@ -30,6 +32,7 @@ public class MotherboardsController {
     }
 
     @GetMapping(path = "/motherboards/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<MotherboardDto> getMotherboard(@PathVariable long id){
         Optional<Motherboard> mbEntity = motherboardService.findById(id);
         return mbEntity.map(motherboard -> new ResponseEntity<>(mapper.mapTo(motherboard), HttpStatus.OK))
@@ -37,12 +40,14 @@ public class MotherboardsController {
     }
 
     @GetMapping(path = "/motherboards")
+    @PreAuthorize("hasRole('Customer')")
     public List<MotherboardDto> getMotherboards(){
         List<Motherboard> motherboards = motherboardService.findAll();
         return motherboards.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 
     @PutMapping(path = "/motherboards/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<MotherboardDto> updateMotherboard(@PathVariable long id, @RequestBody MotherboardDto motherboard){
         if(!motherboardService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -55,6 +60,7 @@ public class MotherboardsController {
     }
 
     @PatchMapping(path = "/motherboards/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<MotherboardDto> partialUpdateMotherboard(@PathVariable long id, @RequestBody MotherboardDto motherboard){
         if(!motherboardService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -67,6 +73,7 @@ public class MotherboardsController {
     }
 
     @DeleteMapping(path = "/motherboards/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteMotherboard(@PathVariable long id){
         return motherboardService.findById(id).map(mb -> {
             motherboardService.delete(mb);
@@ -75,6 +82,7 @@ public class MotherboardsController {
     }
 
     @GetMapping("/motherboards/filter")
+    @PreAuthorize("hasRole('Customer')")
     public List<MotherboardDto> getFilteredMotherboards(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String socket,

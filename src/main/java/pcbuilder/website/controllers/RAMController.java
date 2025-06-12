@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.RAMDto;
@@ -22,23 +23,27 @@ public class RAMController {
         this.ramMapper = ramMapper;
     }
     @PostMapping(path = "/rams")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<RAMDto> createRAM(@RequestBody RAMDto ram){
         RAM ramEntity = ramMapper.mapFrom(ram);
         RAM savedRAM = ramService.save(ramEntity);
         return new ResponseEntity<>(ramMapper.mapTo(savedRAM), org.springframework.http.HttpStatus.CREATED);
     }
     @GetMapping(path = "/rams/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<RAMDto> getRAM(@PathVariable long id){
         Optional<RAM> ramEntity = ramService.findById(id);
         return ramEntity.map(ram -> new ResponseEntity<>(ramMapper.mapTo(ram), org.springframework.http.HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(org.springframework.http.HttpStatus.NOT_FOUND));
     }
     @GetMapping(path = "/rams")
+    @PreAuthorize("hasRole('Customer')")
     public List<RAMDto> getRAMs(){
         List<RAM> gpus = ramService.findAll();
         return gpus.stream().map(ramMapper::mapTo).toList();
     }
     @PutMapping(path = "/rams/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<RAMDto> updateRAM(@PathVariable long id, @RequestBody RAMDto ram){
         if(!ramService.exists(id)){
             return new ResponseEntity<>(org.springframework.http.HttpStatus.NOT_FOUND);
@@ -49,6 +54,7 @@ public class RAMController {
         return new ResponseEntity<>(ramMapper.mapTo(updatedRAM), org.springframework.http.HttpStatus.OK);
     }
     @PatchMapping(path = "/rams/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<RAMDto> partialUpdateRAM(@PathVariable long id, @RequestBody RAMDto ram){
         if(!ramService.exists(id)){
             return new ResponseEntity<>(org.springframework.http.HttpStatus.NOT_FOUND);
@@ -59,6 +65,7 @@ public class RAMController {
         return new ResponseEntity<>(ramMapper.mapTo(updatedRAM), org.springframework.http.HttpStatus.OK);
     }
     @DeleteMapping(path = "rams/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteRAM(@PathVariable long id){
         return ramService.findById(id).map(ram -> {
             ramService.delete(ram);
@@ -66,6 +73,7 @@ public class RAMController {
         }).orElseGet(() -> new ResponseEntity<>(org.springframework.http.HttpStatus.NOT_FOUND));
     }
     @GetMapping(path = "rams/filter")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<List<RAMDto>> getFilteredRAMs(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,

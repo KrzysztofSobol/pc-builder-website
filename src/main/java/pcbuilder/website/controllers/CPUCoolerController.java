@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.CPUCoolerDto;
@@ -26,6 +27,7 @@ public class CPUCoolerController {
     }
 
     @PostMapping("/coolers")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<CPUCoolerDto> createCooler(@RequestBody CPUCoolerDto cooler) {
         CPUCooler entity = mapper.mapFrom(cooler);
         CPUCooler saved = coolerService.save(entity);
@@ -34,6 +36,7 @@ public class CPUCoolerController {
     }
 
     @GetMapping("/coolers/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<CPUCoolerDto> getCooler(@PathVariable long id) {
         Optional<CPUCooler> entity = coolerService.findById(id);
         return entity.map(e -> new ResponseEntity<>(mapper.mapTo(e), HttpStatus.OK))
@@ -41,11 +44,13 @@ public class CPUCoolerController {
     }
 
     @GetMapping("/coolers")
+    @PreAuthorize("hasRole('Customer')")
     public List<CPUCoolerDto> getAllCoolers() {
         return coolerService.findAll().stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 
     @PutMapping("/coolers/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUCoolerDto> updateCooler(@PathVariable long id, @RequestBody CPUCoolerDto cooler) {
         if (!coolerService.exists(id)) {
             log.warning("Cooler with id " + id + " not found");
@@ -59,6 +64,7 @@ public class CPUCoolerController {
     }
 
     @PatchMapping("/coolers/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUCoolerDto> partialUpdateCooler(@PathVariable long id, @RequestBody CPUCoolerDto cooler) {
         if (!coolerService.exists(id)) {
             log.warning("Cooler with id " + id + " not found");
@@ -72,6 +78,7 @@ public class CPUCoolerController {
     }
 
     @DeleteMapping("/coolers/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteCooler(@PathVariable long id) {
         return coolerService.findById(id).map(c -> {
             coolerService.delete(c);
@@ -81,6 +88,7 @@ public class CPUCoolerController {
     }
 
     @GetMapping("/coolers/filter")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<List<CPUCooler>> filterCoolers(
             @RequestParam(required = false) Integer minRPM,
             @RequestParam(required = false) Integer maxRPM,

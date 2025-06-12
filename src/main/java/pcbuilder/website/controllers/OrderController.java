@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,7 @@ public class OrderController {
     }
 
     @PostMapping(path = "/orders")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderDto order) {
         Order orderEntity = orderMapper.mapFrom(order);
         Order savedOrder = orderService.save(orderEntity);

@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.PSUDto;
@@ -29,6 +30,7 @@ public class PSUController {
     }
 
     @PostMapping("/psus")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<PSUDto> createPSU(@RequestBody PSUDto psu) {
         PSU entity = mapper.mapFrom(psu);
         PSU saved = psuService.save(entity);
@@ -37,6 +39,7 @@ public class PSUController {
     }
 
     @GetMapping("/psus/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<PSUDto> getPSU(@PathVariable long id) {
         Optional<PSU> entity = psuService.findById(id);
         return entity.map(e -> new ResponseEntity<>(mapper.mapTo(e), HttpStatus.OK))
@@ -44,11 +47,13 @@ public class PSUController {
     }
 
     @GetMapping("/psus")
+    @PreAuthorize("hasRole('Customer')")
     public List<PSUDto> getAllPSUs() {
         return psuService.findAll().stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 
     @PutMapping("/psus/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<PSUDto> updatePSU(@PathVariable long id, @RequestBody PSUDto psu) {
         if (!psuService.exists(id)) {
             log.warning("PSU with id " + id + " not found");
@@ -62,6 +67,7 @@ public class PSUController {
     }
 
     @PatchMapping("/psus/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<PSUDto> partialUpdatePSU(@PathVariable long id, @RequestBody PSUDto psu) {
         if (!psuService.exists(id)) {
             log.warning("PSU with id " + id + " not found");
@@ -75,6 +81,7 @@ public class PSUController {
     }
 
     @DeleteMapping("/psus/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deletePSU(@PathVariable long id) {
         return psuService.findById(id).map(p -> {
             psuService.delete(p);
@@ -84,6 +91,7 @@ public class PSUController {
     }
 
     @GetMapping("/psus/filter")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<List<PSU>> filterPSUs(
             @RequestParam(required = false) PSUType type,
             @RequestParam(required = false) Efficiency efficiency,

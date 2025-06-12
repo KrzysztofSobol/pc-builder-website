@@ -2,6 +2,7 @@ package pcbuilder.website.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.GPUDto;
@@ -23,6 +24,7 @@ public class GPUController {
     }
 
     @PostMapping(path = "/gpus")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<GPUDto> createGPU(@RequestBody GPUDto gpu) {
         GPU gpuEntity = gpuMapper.mapFrom(gpu);
         GPU savedGPU = gpuService.save(gpuEntity);
@@ -30,6 +32,7 @@ public class GPUController {
     }
 
     @GetMapping(path = "/gpus/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<GPUDto> getGPU(@PathVariable long id) {
         Optional<GPU> gpuEntity = gpuService.findById(id);
 
@@ -38,12 +41,14 @@ public class GPUController {
     }
 
     @GetMapping(path = "/gpus")
+    @PreAuthorize("hasRole('Customer')")
     public List<GPUDto> getGPUs() {
         List<GPU> gpus = gpuService.findAll();
         return gpus.stream().map(gpuMapper::mapTo).collect(Collectors.toList());
     }
 
     @PutMapping(path = "/gpus/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<GPUDto> updateGPU(@PathVariable long id, @RequestBody GPUDto gpu) {
         if(!gpuService.exists(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,6 +61,7 @@ public class GPUController {
     }
 
     @PatchMapping(path = "/gpus/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<GPUDto> partialUpdateGPU(@PathVariable long id, @RequestBody GPUDto gpu) {
         if(!gpuService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -68,6 +74,7 @@ public class GPUController {
     }
 
     @DeleteMapping(path = "gpus/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteGPU(@PathVariable long id) {
         return gpuService.findById(id).map(gpu -> {
             gpuService.delete(gpu);

@@ -3,6 +3,7 @@ package pcbuilder.website.controllers;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.mappers.Mapper;
 import pcbuilder.website.models.dto.products.CPUDto;
@@ -35,6 +36,7 @@ public class CPUController {
     }
 
     @PostMapping(path = "/cpus")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<CPUDto> createCPU(@RequestBody CPUDto cpu) {
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU savedCPU = cpuService.save(cpuEntity);
@@ -43,6 +45,7 @@ public class CPUController {
     }
 
     @GetMapping(path = "/cpus/{id}")
+    @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<CPUDto> getCPU(@PathVariable long id) {
         Optional<CPU> cpuEntity = cpuService.findById(id);
 
@@ -51,12 +54,14 @@ public class CPUController {
     }
 
     @GetMapping(path = "/cpus")
+    @PreAuthorize("hasRole('Customer')")
     public List<CPUDto> getCPUs() {
         List<CPU> cpus = cpuService.findAll();
         return cpus.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 
     @PutMapping(path = "/cpus/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUDto> updateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
         if(!cpuService.exists(id)) {
             log.warning("CPU with id: " + id + " does not exist");
@@ -71,6 +76,7 @@ public class CPUController {
     }
 
     @PatchMapping(path = "/cpus/{id}")
+    @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUDto> partialUpdateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
         if(!cpuService.exists(id)) {
             log.warning("CPU with id: " + id + " does not exist");
@@ -85,6 +91,7 @@ public class CPUController {
     }
 
     @DeleteMapping(path = "/cpus/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteCPU(@PathVariable long id) {
         return cpuService.findById(id).map(cpu -> {
             cpuService.delete(cpu);
