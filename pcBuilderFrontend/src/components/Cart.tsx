@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Trash2 } from 'lucide-react';
-import type { product } from "../dtos/response/product.ts";
+import type { product } from "../dtos/both/product.ts";
 
 interface CartItem extends product {
     quantity: number;
 }
 
 export default function Cart() {
+    const navigate = useNavigate();
     const [cart, setCart] = useState<CartItem[]>(() => {
         const savedCart = localStorage.getItem('cart');
         return savedCart ? JSON.parse(savedCart) : [];
@@ -55,7 +57,7 @@ export default function Cart() {
                                         src={item.imageUrl || 'https://placehold.co/100x100'}
                                         alt={item.name}
                                         className="me-3"
-                                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                        style={{width: '100px', height: '100px', objectFit: 'cover'}}
                                     />
                                     <div className="flex-grow-1">
                                         <h5 className="mb-1">{item.name}</h5>
@@ -80,7 +82,7 @@ export default function Cart() {
                                                 className="btn btn-outline-danger btn-sm"
                                                 onClick={() => removeFromCart(item.productID)}
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={16}/>
                                             </button>
                                         </div>
                                     </div>
@@ -91,13 +93,19 @@ export default function Cart() {
                             </div>
                         ))}
                     </div>
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex justify-content-between align-items-center w-100">
                         <button className="btn btn-outline-danger" onClick={clearCart}>
                             Wyczyść koszyk
                         </button>
-                        <div>
+
+                        <div className="ms-auto text-end">
                             <h4>Razem: {totalPrice.toFixed(2)} zł</h4>
-                            <button className="btn btn-primary">Przejdź do płatności</button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => navigate('/checkout')}
+                            >
+                                Zamów
+                            </button>
                         </div>
                     </div>
                 </>

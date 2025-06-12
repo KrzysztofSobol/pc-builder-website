@@ -1,4 +1,4 @@
-import type { product } from "../dtos/response/product.ts";
+import type { product } from "../dtos/both/product.ts";
 import axiosInstance from "../axiosConfig.ts";
 import type {pagedResponse} from "../dtos/response/pagedResponse.ts";
 

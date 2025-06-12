@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { product } from "../dtos/response/product.ts";
+import type { product } from "../dtos/both/product.ts";
 
 interface CartItem extends product {
   quantity: number;

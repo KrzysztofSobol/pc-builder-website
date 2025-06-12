@@ -1,6 +1,6 @@
-import type {user} from "./user.ts";
+import type {userResponse} from "./userResponse.ts";
 
 export interface authResponse {
     token: string;
-    user: user;
+    user: userResponse;
 }
