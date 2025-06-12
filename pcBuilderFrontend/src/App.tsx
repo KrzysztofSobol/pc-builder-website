@@ -3,8 +3,9 @@ import LoginForm from './components/LoginForm';
 import MainPage from './components/MainPage';
 import Cart from './components/Cart';
 import CheckoutForm from './components/CheckoutForm';
+import OrderSummary from './components/OrderSummary';
 import Navbar from './components/Navbar';
-import {authMe, logout} from './services/authService';
+import { authMe, logout } from './services/authService';
 import { AuthProvider } from './AuthContext';
 import type { userResponse } from './dtos/response/userResponse';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -57,6 +58,10 @@ export default function App() {
                     <Route
                         path="/checkout"
                         element={user ? <CheckoutForm /> : <Navigate to="/login" replace />}
+                    />
+                    <Route
+                        path="/order-summary"
+                        element={user ? <OrderSummary /> : <Navigate to="/login" replace />}
                     />
                     <Route
                         path="/login"

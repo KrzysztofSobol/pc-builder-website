@@ -65,9 +65,9 @@ export default function CheckoutForm() {
                 }))
             };
 
-            await createOrder(order);
+            const orderResponse = await createOrder(order);
             localStorage.removeItem('cart');
-            navigate('/stripe/success');
+            navigate('/order-summary', { state: { order: orderResponse } });
         } catch (err) {
             setError('Wystąpił błąd podczas składania zamówienia. Spróbuj ponownie.');
             console.error(err);
