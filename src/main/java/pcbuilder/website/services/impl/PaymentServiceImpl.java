@@ -18,6 +18,7 @@ import pcbuilder.website.utils.StripeConfig;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -169,6 +170,19 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (SignatureVerificationException e) {
             log.warning("Failed to verify webhook signature: " + e.getMessage());
             return false;
+        }
+    }
+    @Override
+    public String getEmailFromSession(String sessionId) {
+        try {
+            log.fine("Getting email from session...");
+            Session session = Session.retrieve(sessionId);
+            String orderId = session.getMetadata().get("order_id");
+            Optional<Order> order = orderService.findById(Long.parseLong(orderId));
+            return order.map(Order::getUser).map(user -> user.getEmail()).orElseThrow(() -> new RuntimeException("Order not found"));
+        } catch (StripeException e) {
+            log.warning("Failed to get email from session: " + e.getMessage());
+            throw new RuntimeException("Failed to get email from session");
         }
     }
 }

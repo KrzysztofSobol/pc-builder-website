@@ -7,15 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pcbuilder.website.models.dto.payment.PaymentRequestDto;
 import pcbuilder.website.models.dto.payment.PaymentResponseDto;
+import pcbuilder.website.services.MailService;
 import pcbuilder.website.services.PaymentService;
 
 @RestController
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final MailService mailService;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, MailService mailService) {
         this.paymentService = paymentService;
+        this.mailService = mailService;
     }
 
     @PostMapping("/create-checkout-session")
@@ -46,11 +49,15 @@ public class PaymentController {
             switch (eventType) {
                 case "checkout.session.completed":
                     String sessionId = eventJson.get("data").get("object").get("id").asText();
+
+                    mailService.sendEmail(paymentService.getEmailFromSession(sessionId),"Payment confirmation", "Your payment has been successful!");
+
                     paymentService.handleSuccessfulPayment(sessionId);
                     break;
 
                 case "checkout.session.expired":
                     String expiredSessionId = eventJson.get("data").get("object").get("id").asText();
+                    mailService.sendEmail(paymentService.getEmailFromSession(expiredSessionId),"Payment failed", "Your payment has been failed!");
                     paymentService.handleFailedPayment(expiredSessionId);
                     break;
             }

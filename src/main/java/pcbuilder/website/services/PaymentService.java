@@ -8,4 +8,5 @@ public interface PaymentService {
     void handleSuccessfulPayment(String sessionId);
     void handleFailedPayment(String sessionId);
     boolean verifyWebhookSignature(String payload, String sigHeader);
+    String getEmailFromSession(String sessionId);
 }
