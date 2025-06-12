@@ -22,13 +22,20 @@ public class CPUCoolerController {
     private final static Logger log = Logger.getLogger(CPUCoolerController.class.getName());
 
     public CPUCoolerController(CPUCoolerService coolerService, Mapper<CPUCooler, CPUCoolerDto> mapper) {
-        this.coolerService = coolerService;
-        this.mapper = mapper;
+        try {
+            log.finer("CPUCoolerController created");
+            this.coolerService = coolerService;
+            this.mapper = mapper;
+        } catch (Exception e) {
+            log.severe("CPUCoolerController creation failed");
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/coolers")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<CPUCoolerDto> createCooler(@RequestBody CPUCoolerDto cooler) {
+        log.info("Cooler Post " + cooler);
         CPUCooler entity = mapper.mapFrom(cooler);
         CPUCooler saved = coolerService.save(entity);
         log.info("Saved CPUCooler: " + saved);
@@ -38,6 +45,7 @@ public class CPUCoolerController {
     @GetMapping("/coolers/{id}")
     @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<CPUCoolerDto> getCooler(@PathVariable long id) {
+        log.info("Cooler Get " + id);
         Optional<CPUCooler> entity = coolerService.findById(id);
         return entity.map(e -> new ResponseEntity<>(mapper.mapTo(e), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -46,12 +54,14 @@ public class CPUCoolerController {
     @GetMapping("/coolers")
     @PreAuthorize("hasRole('Customer')")
     public List<CPUCoolerDto> getAllCoolers() {
+        log.info("Cooler Get All");
         return coolerService.findAll().stream().map(mapper::mapTo).collect(Collectors.toList());
     }
 
     @PutMapping("/coolers/{id}")
     @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUCoolerDto> updateCooler(@PathVariable long id, @RequestBody CPUCoolerDto cooler) {
+        log.info("Cooler Put " + id + " " + cooler);
         if (!coolerService.exists(id)) {
             log.warning("Cooler with id " + id + " not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -59,13 +69,13 @@ public class CPUCoolerController {
 
         cooler.setProductID(id);
         CPUCooler updated = coolerService.update(mapper.mapFrom(cooler));
-        log.info("Updated CPUCooler: " + updated);
         return new ResponseEntity<>(mapper.mapTo(updated), HttpStatus.OK);
     }
 
     @PatchMapping("/coolers/{id}")
     @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUCoolerDto> partialUpdateCooler(@PathVariable long id, @RequestBody CPUCoolerDto cooler) {
+        log.info("Cooler Patch " + id + " " + cooler);
         if (!coolerService.exists(id)) {
             log.warning("Cooler with id " + id + " not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -73,18 +83,21 @@ public class CPUCoolerController {
 
         cooler.setProductID(id);
         CPUCooler updated = coolerService.partialUpdate(id, mapper.mapFrom(cooler));
-        log.info("Patched CPUCooler: " + updated);
         return new ResponseEntity<>(mapper.mapTo(updated), HttpStatus.OK);
     }
 
     @DeleteMapping("/coolers/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteCooler(@PathVariable long id) {
+        log.info("Cooler Delete " + id);
         return coolerService.findById(id).map(c -> {
             coolerService.delete(c);
-            log.info("Deleted CPUCooler: " + c);
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }).orElseGet(() -> {
+            log.warning("Cooler with id " + id + " not found");
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return null;
+        });
     }
 
     @GetMapping("/coolers/filter")
@@ -100,6 +113,7 @@ public class CPUCoolerController {
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice
     ) {
+        log.info("Cooler filter " + "minRPM: " + minRPM + "maxRPM: " + maxRPM + "minNoise: " + minNoise + "maxNoise: " + maxNoise + "color: " + color + "minHeight: " + minHeight + "maxHeight: " + maxHeight + "minPrice: " + minPrice + "maxPrice: " + maxPrice);
         List<CPUCooler> filtered = coolerService.filterCoolers(minRPM, maxRPM, minNoise, maxNoise, color, minHeight, maxHeight, minPrice, maxPrice);
         return new ResponseEntity<>(filtered, HttpStatus.OK);
     }
