@@ -11,21 +11,30 @@ import pcbuilder.website.services.MotherboardService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
 public class MotherboardsController {
+    private final static Logger log = Logger.getLogger(MotherboardsController.class.getName());
     private final MotherboardService motherboardService;
     private final Mapper<Motherboard, MotherboardDto> mapper;
 
     public MotherboardsController(MotherboardService motherboardService, Mapper<Motherboard, MotherboardDto> mapper){
-        this.motherboardService = motherboardService;
-        this.mapper = mapper;
+        try {
+            log.finer("MotherboardsController created");
+            this.motherboardService = motherboardService;
+            this.mapper = mapper;
+        } catch (Exception e) {
+            log.severe("MotherboardsController creation failed");
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping(path = "/motherboards")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<MotherboardDto> addMotherboard(@RequestBody MotherboardDto mb){
+        log.info("Motherboard Post " + mb);
         Motherboard mbEntity = mapper.mapFrom(mb);
         Motherboard savedMb = motherboardService.save(mbEntity);
         return new ResponseEntity<>(mapper.mapTo(savedMb), HttpStatus.CREATED);
@@ -34,6 +43,7 @@ public class MotherboardsController {
     @GetMapping(path = "/motherboards/{id}")
     @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<MotherboardDto> getMotherboard(@PathVariable long id){
+        log.info("Motherboard Get " + id);
         Optional<Motherboard> mbEntity = motherboardService.findById(id);
         return mbEntity.map(motherboard -> new ResponseEntity<>(mapper.mapTo(motherboard), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -42,6 +52,7 @@ public class MotherboardsController {
     @GetMapping(path = "/motherboards")
     @PreAuthorize("hasRole('Customer')")
     public List<MotherboardDto> getMotherboards(){
+        log.info("Motherboard Get All");
         List<Motherboard> motherboards = motherboardService.findAll();
         return motherboards.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
@@ -49,7 +60,9 @@ public class MotherboardsController {
     @PutMapping(path = "/motherboards/{id}")
     @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<MotherboardDto> updateMotherboard(@PathVariable long id, @RequestBody MotherboardDto motherboard){
+        log.info("Motherboard Put " + id + " " + motherboard);
         if(!motherboardService.exists(id)){
+            log.warning("Motherboard with id " + id + " not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -62,6 +75,7 @@ public class MotherboardsController {
     @PatchMapping(path = "/motherboards/{id}")
     @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<MotherboardDto> partialUpdateMotherboard(@PathVariable long id, @RequestBody MotherboardDto motherboard){
+        log.info("Motherboard Patch " + id + " " + motherboard);
         if(!motherboardService.exists(id)){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

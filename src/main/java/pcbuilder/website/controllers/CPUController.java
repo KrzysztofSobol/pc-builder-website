@@ -26,7 +26,7 @@ public class CPUController {
 
     public CPUController(CPUService cpuService, Mapper<CPU, CPUDto> mapper) {
         try {
-            log.info("CPUController created");
+            log.finer("CPUController created");
             this.cpuService = cpuService;
             this.mapper = mapper;
         } catch (Exception e) {
@@ -38,15 +38,16 @@ public class CPUController {
     @PostMapping(path = "/cpus")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<CPUDto> createCPU(@RequestBody CPUDto cpu) {
+        log.info("CPU Post " + cpu);
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU savedCPU = cpuService.save(cpuEntity);
-        log.info("Saved CPU: " + savedCPU.toString());
         return new ResponseEntity<>(mapper.mapTo(savedCPU), HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/cpus/{id}")
     @PreAuthorize("hasRole('Customer')")
     public ResponseEntity<CPUDto> getCPU(@PathVariable long id) {
+        log.info("CPU Get " + id);
         Optional<CPU> cpuEntity = cpuService.findById(id);
 
         return cpuEntity.map(cpu -> new ResponseEntity<>(mapper.mapTo(cpu), HttpStatus.OK))
@@ -56,6 +57,7 @@ public class CPUController {
     @GetMapping(path = "/cpus")
     @PreAuthorize("hasRole('Customer')")
     public List<CPUDto> getCPUs() {
+        log.info("CPU Get All");
         List<CPU> cpus = cpuService.findAll();
         return cpus.stream().map(mapper::mapTo).collect(Collectors.toList());
     }
@@ -63,6 +65,7 @@ public class CPUController {
     @PutMapping(path = "/cpus/{id}")
     @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUDto> updateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
+        log.info("CPU Put " + id + " " + cpu);
         if(!cpuService.exists(id)) {
             log.warning("CPU with id: " + id + " does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -71,13 +74,13 @@ public class CPUController {
         cpu.setProductID(id);
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU updatedCPU = cpuService.update(cpuEntity);
-        log.info("Updated CPU: " + updatedCPU.toString());
         return new ResponseEntity<>(mapper.mapTo(updatedCPU), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/cpus/{id}")
     @PreAuthorize("hasRole('Mod')")
     public ResponseEntity<CPUDto> partialUpdateCPU(@PathVariable long id, @RequestBody CPUDto cpu) {
+        log.info("CPU Patch " + id + " " + cpu);
         if(!cpuService.exists(id)) {
             log.warning("CPU with id: " + id + " does not exist");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -86,18 +89,21 @@ public class CPUController {
         cpu.setProductID(id);
         CPU cpuEntity = mapper.mapFrom(cpu);
         CPU updatedCPU = cpuService.partialUpdate(id, cpuEntity);
-        log.info("Updated CPU: " + updatedCPU.toString());
         return new ResponseEntity<>(mapper.mapTo(updatedCPU), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/cpus/{id}")
     @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<Void> deleteCPU(@PathVariable long id) {
+        log.info("CPU Delete " + id);
         return cpuService.findById(id).map(cpu -> {
             cpuService.delete(cpu);
-            log.info("Deleted CPU: " + cpu.toString());
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-        }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }).orElseGet(() -> {
+            log.warning("CPU with id: " + id + " does not exist");
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return null;
+        });
     }
 
     @GetMapping(path = "/cpus/filter")
@@ -113,6 +119,7 @@ public class CPUController {
             @RequestParam(required = false) Boolean graphics,
             @RequestParam(required = false) Boolean smt
     ) {
+        log.info("Cpu filter " + "name: "+ name + "socket: " + socket + "coreCount: " + minCoreCount + "coreClock: " + minCoreClock + "price: " + minPrice + "graphics: " + graphics + "smt: " + smt);
         List<CPU> filteredCPUs = cpuService.filterCPUs(name, socket, minCoreCount, maxCoreCount, minCoreClock, maxCoreClock, minPrice, maxPrice, graphics, smt);
         return new ResponseEntity<>(filteredCPUs, HttpStatus.OK);
     }
