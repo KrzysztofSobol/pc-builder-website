@@ -15,7 +15,9 @@ import pcbuilder.website.models.dto.auth.AuthResponse;
 import pcbuilder.website.models.dto.auth.RegisterRequest;
 import pcbuilder.website.models.dto.UserDto;
 import pcbuilder.website.models.entities.User;
+import pcbuilder.website.services.MailService;
 import pcbuilder.website.services.UserService;
+import pcbuilder.website.services.impl.MailServiceImpl;
 import pcbuilder.website.utils.JwtUtil;
 
 import java.time.LocalDateTime;
@@ -30,13 +32,15 @@ public class AuthController {
     private final Mapper<User, UserDto> userMapper;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
-    public AuthController(JwtUtil jwtUtil, UserService userService, Mapper<User, UserDto> userMapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    public AuthController(JwtUtil jwtUtil, UserService userService, Mapper<User, UserDto> userMapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, MailService mailService) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.userMapper = userMapper;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     @PostMapping("/login")
@@ -94,6 +98,8 @@ public class AuthController {
         jwtCookie.setHttpOnly(true);
         //jwtCookie.setSecure(true); // this sends only through "https", swagger is "http" so no use for it for now
         response.addCookie(jwtCookie);
+
+        mailService.sendEmail(user.getEmail(),"Register", "skibidi").thenApply(v -> "E-mail jest wysyłany asynchronicznie!");
 
         return new ResponseEntity<>(new AuthResponse(token, userMapper.mapTo(savedUser)), HttpStatus.OK);
     }

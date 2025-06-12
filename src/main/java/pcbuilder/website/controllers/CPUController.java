@@ -21,11 +21,17 @@ public class CPUController {
     private final CPUService cpuService;
     private final Mapper<CPU, CPUDto> mapper;
     private final static Logger log =
-            Logger.getLogger(GPUServiceImpl.class.getName());
+            Logger.getLogger(CPUController.class.getName());
 
     public CPUController(CPUService cpuService, Mapper<CPU, CPUDto> mapper) {
-        this.cpuService = cpuService;
-        this.mapper = mapper;
+        try {
+            log.info("CPUController created");
+            this.cpuService = cpuService;
+            this.mapper = mapper;
+        } catch (Exception e) {
+            log.severe("CPUController creation failed");
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping(path = "/cpus")
@@ -39,6 +45,7 @@ public class CPUController {
     @GetMapping(path = "/cpus/{id}")
     public ResponseEntity<CPUDto> getCPU(@PathVariable long id) {
         Optional<CPU> cpuEntity = cpuService.findById(id);
+
         return cpuEntity.map(cpu -> new ResponseEntity<>(mapper.mapTo(cpu), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

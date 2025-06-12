@@ -19,16 +19,24 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
+    private final static Logger log =
+            Logger.getLogger(JwtRequestFilter.class.getName());
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
     public JwtRequestFilter(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
+        try {
+            log.info("JwtRequestFilter created.");
+            this.userService = userService;
+            this.jwtUtil = jwtUtil;
+        } catch (Exception e) {
+            log.severe("JwtRequestFilter creation failed.");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -36,6 +44,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String email = null;
         String token = null;
 
+        log.info("Request received. " + request.getRequestURI());
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -50,6 +59,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 email = jwtUtil.extractEmail(token);
             } catch (Exception e) {
+                log.severe("Error while extracting email from token.");
                 // error handle that or log idk
             }
         }
