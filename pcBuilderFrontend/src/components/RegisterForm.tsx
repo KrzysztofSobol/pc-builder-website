@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { register, authMe } from '../services/authService';
 import type { registerRequest } from '../dtos/request/registerRequest';
 import type { userResponse } from '../dtos/response/userResponse';
+import {Link} from "react-router-dom";
 
 interface RegisterFormProps {
   onRegisterSuccess: (user: userResponse) => void;
@@ -85,6 +86,9 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
                     Zarejestruj się
                   </button>
                 </form>
+                <div className="text-center mt-3">
+                  <p>Masz już konto? <Link to="/login">Zaloguj się</Link></p>
+                </div>
               </div>
             </div>
           </div>

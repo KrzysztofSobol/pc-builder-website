@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { login, authMe } from '../services/authService';
 import type { loginRequest } from '../dtos/request/loginRequest';
 import type { userResponse } from '../dtos/response/userResponse';
+import {Link} from "react-router-dom";
 
 interface LoginFormProps {
   onLoginSuccess: (user: userResponse) => void;
@@ -71,6 +72,9 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
                     Zaloguj się
                   </button>
                 </form>
+                <div className="text-center mt-3">
+                  <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>
+                </div>
               </div>
             </div>
           </div>
