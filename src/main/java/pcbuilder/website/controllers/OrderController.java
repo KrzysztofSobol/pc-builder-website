@@ -32,7 +32,7 @@ public class OrderController {
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderDto order) {
         Order orderEntity = orderMapper.mapFrom(order);
         Order savedOrder = orderService.save(orderEntity);
-        mailService.sendEmail(order.getRecipient().getEmail(), "Order confirmation", "Your order has been placed successfully!");
+        mailService.sendEmail(order.getRecipient().getEmail(), "Order confirmation", "Your order has been placed successfully! Waiting for payment");
         return new ResponseEntity<>(orderResponseMapper.mapTo(savedOrder), HttpStatus.OK);
     }
 }

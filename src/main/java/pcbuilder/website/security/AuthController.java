@@ -99,7 +99,7 @@ public class AuthController {
         //jwtCookie.setSecure(true); // this sends only through "https", swagger is "http" so no use for it for now
         response.addCookie(jwtCookie);
 
-        mailService.sendEmail(user.getEmail(),"Register", "skibidi").thenApply(v -> "E-mail jest wysyłany asynchronicznie!");
+        mailService.sendEmail(user.getEmail(),"Register", "Account registered successfully ").thenApply(v -> "E-mail jest wysyłany asynchronicznie!");
 
         return new ResponseEntity<>(new AuthResponse(token, userMapper.mapTo(savedUser)), HttpStatus.OK);
     }
